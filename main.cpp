@@ -2,6 +2,19 @@
 
 const char kWindowTitle[] = "LE2D_08_オオノ_ユウキ";
 
+struct Vector3 {
+	float x;
+	float y;
+	float z;
+};
+
+struct Matrix4x4 {
+	float m[4][4];
+};
+
+
+
+
 const int kWindowWidth = 1280;
 const int kWindowHeight = 720;
 
