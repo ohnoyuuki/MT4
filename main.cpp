@@ -15,9 +15,19 @@ struct Matrix4x4 {
 };
 
 
+// 正規化
+Vector3 Normalize(const Vector3& v) {
+	float length = sqrtf(v.x * v.x + v.y * v.y + v.z * v.z);
+	return { v.x / length, v.y / length, v.z / length };
+}
+
 Matrix4x4 MakeRotateAxisAngle(const Vector3& axis, float angle);
 
-Vector3 axis = 
+Vector3 axis = Normalize({1.0f,1.0f,1.0f});
+
+float angle = 0.44f;
+
+Matrix4x4 rotateMatrix = MakeRotateAxisAngle(axis, angle);
 
 
 // Windowsアプリでのエントリーポイント(main関数)
