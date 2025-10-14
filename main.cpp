@@ -1,6 +1,8 @@
 #include <Novice.h>
-
+#include<KamataEngine.h>
 const char kWindowTitle[] = "LE2D_08_オオノ_ユウキ";
+
+
 
 struct Vector3 {
 	float x;
@@ -13,15 +15,16 @@ struct Matrix4x4 {
 };
 
 
+Matrix4x4 MakeRotateAxisAngle(const Vector3& axis, float angle);
 
-
-const int kWindowWidth = 1280;
-const int kWindowHeight = 720;
+Vector3 axis = 
 
 
 // Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
+	const int kWindowWidth = 1280;
+	const int kWindowHeight = 720;
 
 	// ライブラリの初期化
 	Novice::Initialize(kWindowTitle, kWindowWidth, kWindowHeight);
