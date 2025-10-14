@@ -30,6 +30,19 @@ float angle = 0.44f;
 Matrix4x4 rotateMatrix = MakeRotateAxisAngle(axis, angle);
 
 
+
+
+
+void MatrixScreenPrintf(int x, int y, const Matrix4x4& matrix, const char* label) {
+	Novice::ScreenPrintf(x, y - kRowHeight, "%s", label);
+	for (int row = 0; row < 4; ++row) {
+		for (int column = 0; column < 4; ++column) {
+			Novice::ScreenPrintf(x + column * kColumnWidth, y + row * kRowHeight,
+				"%6.02f", matrix.m[row][column]);
+		}
+	}
+}
+
 // Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
