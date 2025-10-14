@@ -14,47 +14,74 @@ struct Matrix4x4 {
 	float m[4][4];
 };
 
-
 // 正規化
 Vector3 Normalize(const Vector3& v) {
 	float length = sqrtf(v.x * v.x + v.y * v.y + v.z * v.z);
 	return { v.x / length, v.y / length, v.z / length };
 }
 
-Matrix4x4 MakeRotateAxisAngle(const Vector3& axis, float angle);
+// 任意軸回転行列
+Matrix4x4 MakeRotateAxisAngle(const Vector3& axis, float angle) {
+	Matrix4x4 result{};
 
-Vector3 axis = Normalize({1.0f,1.0f,1.0f});
+	float c = cosf(angle);
+	float s = sinf(angle);
+	float oneMinusC = 1.0f - c;
 
-float angle = 0.44f;
+	result.m[0][0] = c + axis.x * axis.x * oneMinusC;
+	result.m[0][1] = axis.x * axis.y * oneMinusC + axis.z * s;
+	result.m[0][2] = axis.x * axis.z * oneMinusC - axis.y * s;
+	result.m[0][3] = 0.0f;
 
-Matrix4x4 rotateMatrix = MakeRotateAxisAngle(axis, angle);
+	result.m[1][0] = axis.y * axis.x * oneMinusC - axis.z * s;
+	result.m[1][1] = c + axis.y * axis.y * oneMinusC;
+	result.m[1][2] = axis.y * axis.z * oneMinusC + axis.x * s;
+	result.m[1][3] = 0.0f;
 
+	result.m[2][0] = axis.z * axis.x * oneMinusC + axis.y * s;
+	result.m[2][1] = axis.z * axis.y * oneMinusC - axis.x * s;
+	result.m[2][2] = c + axis.z * axis.z * oneMinusC;
+	result.m[2][3] = 0.0f;
 
+	result.m[3][0] = 0.0f;
+	result.m[3][1] = 0.0f;
+	result.m[3][2] = 0.0f;
+	result.m[3][3] = 1.0f;
 
+	return result;
+}
 
+static const int kRowHeight = 20;
+static const int kColumnWidth = 60;
 
 void MatrixScreenPrintf(int x, int y, const Matrix4x4& matrix, const char* label) {
 	Novice::ScreenPrintf(x, y - kRowHeight, "%s", label);
 	for (int row = 0; row < 4; ++row) {
 		for (int column = 0; column < 4; ++column) {
-			Novice::ScreenPrintf(x + column * kColumnWidth, y + row * kRowHeight,
-				"%6.02f", matrix.m[row][column]);
+			Novice::ScreenPrintf(
+				x + column * kColumnWidth,
+				y + row * kRowHeight,
+				"%6.03f",
+				matrix.m[row][column]
+			);
 		}
 	}
 }
 
-// Windowsアプリでのエントリーポイント(main関数)
+// エントリーポイント
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
-
 	const int kWindowWidth = 1280;
 	const int kWindowHeight = 720;
 
-	// ライブラリの初期化
 	Novice::Initialize(kWindowTitle, kWindowWidth, kWindowHeight);
 
-	// キー入力結果を受け取る箱
-	char keys[256] = {0};
-	char preKeys[256] = {0};
+	char keys[256] = { 0 };
+	char preKeys[256] = { 0 };
+
+	Vector3 axis = Normalize({ 1.0f, 1.0f, 1.0f });
+	float angle = 0.44f;
+
+	Matrix4x4 rotateMatrix = MakeRotateAxisAngle(axis, angle);
 
 	// ウィンドウの×ボタンが押されるまでループ
 	while (Novice::ProcessMessage() == 0) {
@@ -65,21 +92,28 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		memcpy(preKeys, keys, 256);
 		Novice::GetHitKeyStateAll(keys);
 
-		///
-		/// ↓更新処理ここから
-		///
+
+
+	    ///
+		///↓更新処理ここから
+		/// 
+	
+
+
 
 		///
 		/// ↑更新処理ここまで
 		///
 
-		///
+
+
 		/// ↓描画処理ここから
 		///
-
+		MatrixScreenPrintf(0, 100, rotateMatrix, "rotateMatrix");
 		///
 		/// ↑描画処理ここまで
 		///
+
 
 		// フレームの終了
 		Novice::EndFrame();
@@ -90,7 +124,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		}
 	}
 
-	// ライブラリの終了
 	Novice::Finalize();
 	return 0;
 }
