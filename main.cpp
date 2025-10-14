@@ -1,9 +1,11 @@
-Matrix4x4 DirectionToDirection(const Vector3& from, const Vector3& to);
+
 const char kWindowTitle[] = "LE2D_08_オオノ_ユウキ";
 #include <Novice.h>
 #include "KamataEngine.h"
 
 
+const int kWindowWidth = 1280;
+const int kWindowHeight = 720;
 
 
 struct Vector3 {
@@ -23,13 +25,12 @@ Vector3 Normalize(const Vector3& v) {
 	return { v.x / length, v.y / length, v.z / length };
 }
 
+Matrix4x4 DirectionToDirection(const Vector3& from, const Vector3& to);
 
 
-
-const int kWindowWidth = 1280;
-const int kWindowHeight = 720;
 
 static const int kRowHeight = 20;
+static const int kColumnWidth = 60;
 
 void MatrixScreenPrintf(int x, int y, const Matrix4x4& matrix, const char* label) {
 
@@ -91,7 +92,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		///
 
 		MatrixScreenPrintf(0,0,rotateMatrix0,"rotateMatrix0");
-		MatrixScreenPrintf(0,kRowHeight)
+		MatrixScreenPrintf(0, kRowHeight * 5,rotateMatrix1,"rotateMatrix1");
+		MatrixScreenPrintf(0, kRowHeight * 10, rotateMatrix2, "rotateMatrix2");
 
 		///
 		/// ↑描画処理ここまで
