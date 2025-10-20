@@ -1,6 +1,6 @@
+const char kWindowTitle[] = "LE2D_08_オオノ_ユウキ";
 #include <Novice.h>
 #include<KamataEngine.h>
-const char kWindowTitle[] = "LE2D_08_オオノ_ユウキ";
 
 
 
@@ -10,20 +10,21 @@ struct Vector3 {
 	float z;
 };
 
+// 4×4 行列（長さを1にする）
 struct Matrix4x4 {
 	float m[4][4];
 };
 
-// 正規化
+// 正規化（長さを1にする）
 Vector3 Normalize(const Vector3& v) {
 	float length = sqrtf(v.x * v.x + v.y * v.y + v.z * v.z);
 	return { v.x / length, v.y / length, v.z / length };
 }
 
-// 任意軸回転行列
+// 任意軸回転行列を作る関数
 Matrix4x4 MakeRotateAxisAngle(const Vector3& axis, float angle) {
 	Matrix4x4 result{};
-
+	// 角度の余弦・正弦を求める
 	float c = cosf(angle);
 	float s = sinf(angle);
 	float oneMinusC = 1.0f - c;
