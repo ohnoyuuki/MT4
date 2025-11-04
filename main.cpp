@@ -225,19 +225,6 @@ Matrix4x4 DirectionToDirection(const Vector3& from, const Vector3& to) {
 static const int kRowHeight = 20;
 static const int kColumnWidth = 60;
 
-void MatrixScreenPrintf(int x, int y, const Matrix4x4& matrix, const char* label) {
-	// ラベル表示
-	Novice::ScreenPrintf(x, y - kRowHeight, "%s", label);
-	// 行列の表示
-	for (int row = 0; row < 4; ++row) {
-		for (int column = 0; column < 4; ++column) {
-			Novice::ScreenPrintf(x + column * kColumnWidth,
-				y + row * kRowHeight,
-				"%6.03f", matrix.m[row][column]);
-		}
-	}
-}
-
 
 // Windowsアプリのエントリーポイント
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
