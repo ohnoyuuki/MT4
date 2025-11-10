@@ -280,6 +280,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		PrintQuaternionLine(0, y += 20, mul2, "Multiply(q2, q1)");
 		Novice::ScreenPrintf(0, y += 20, "%6.02f                           : Norm", norm);
 		
+		
 		///
 		/// ↑描画処理ここまで
 
