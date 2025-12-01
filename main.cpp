@@ -1,19 +1,19 @@
 #include <Novice.h>
 #include <cmath>
 #include "KamataEngine.h"
-const char kWindowTitle[] = "LE2D_08_ƒIƒIƒm_ƒ†ƒEƒL";
+const char kWindowTitle[] = "LE2D_08_ã‚ªã‚ªãƒ_ãƒ¦ã‚¦ã‚­";
 
-// ƒEƒBƒ“ƒhƒEƒTƒCƒY’è‹`
+// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚µã‚¤ã‚ºå®šç¾©
 const int kWindowWidth = 1280;
 const int kWindowHeight = 720;
 
-// 3ŸŒ³ƒxƒNƒgƒ‹\‘¢‘Ì
+// 3æ¬¡å…ƒãƒ™ã‚¯ãƒˆãƒ«æ§‹é€ ä½“
 struct Vector3 {
 	float x;
 	float y;
 	float z;
 };
-// Quaternion\‘¢‘Ì
+// Quaternionæ§‹é€ ä½“
 struct Quaternion {
 	float x;
 	float y;
@@ -21,12 +21,12 @@ struct Quaternion {
 	float w;
 };
 
-// 4~4s—ñ\‘¢‘Ì
+// 4Ã—4è¡Œåˆ—æ§‹é€ ä½“
 struct Matrix4x4 {
 	float m[4][4];
 };
 
-// Quaternion‚ÌÏ
+// Quaternionã®ç©
 Quaternion Multiply(const Quaternion& lhs, const Quaternion& rhs) {
 	Quaternion result;
 	result.x = lhs.w * rhs.x + lhs.x * rhs.w + lhs.y * rhs.z - lhs.z * rhs.y;
@@ -36,18 +36,18 @@ Quaternion Multiply(const Quaternion& lhs, const Quaternion& rhs) {
 	return result;
 }
 
-// ’PˆÊQuaternion‚ğ•Ô‚·
+// å˜ä½Quaternionã‚’è¿”ã™
 Quaternion IdentityQuaternion() {
 	return { 0.0f, 0.0f, 0.0f, 1.0f };
 }
 
-// ‹¤–ğQuaternion‚ğ•Ô‚·
+// å…±å½¹Quaternionã‚’è¿”ã™
 Quaternion Conjugate(const Quaternion& quaternion) {
 	return { -quaternion.x, -quaternion.y, -quaternion.z, quaternion.w };
 }
 
 
-// Quaternion‚Ìƒmƒ‹ƒ€‚ğ•Ô‚·
+// Quaternionã®ãƒãƒ«ãƒ ã‚’è¿”ã™
 float Norm(const Quaternion& quaternion) {
 	return sqrtf(quaternion.x * quaternion.x +
 		quaternion.y * quaternion.y +
@@ -55,14 +55,14 @@ float Norm(const Quaternion& quaternion) {
 		quaternion.w * quaternion.w);
 }
 
-// ³‹K‰»‚µ‚½Quaternion‚ğ•Ô‚·
+// æ­£è¦åŒ–ã—ãŸQuaternionã‚’è¿”ã™
 Quaternion Normalize(const Quaternion& quaternion) {
 	float n = Norm(quaternion);
 	if (n == 0.0f) return IdentityQuaternion();
 	return { quaternion.x / n, quaternion.y / n, quaternion.z / n, quaternion.w / n };
 }
 
-// ‹tQuaternion‚ğ•Ô‚·
+// é€†Quaternionã‚’è¿”ã™
 Quaternion Inverse(const Quaternion& quaternion) {
 	float normSq = quaternion.x * quaternion.x +
 		quaternion.y * quaternion.y +
@@ -73,7 +73,7 @@ Quaternion Inverse(const Quaternion& quaternion) {
 	return { conj.x / normSq, conj.y / normSq, conj.z / normSq, conj.w / normSq };
 }
 
-// •\¦—p
+// è¡¨ç¤ºç”¨
 void PrintQuaternionLine(int x, int y, const Quaternion& q, const char* label) {
 	Novice::ScreenPrintf(x, y, "%6.02f  %6.02f  %6.02f  %6.02f   : %s",
 		q.x, q.y, q.z, q.w, label);
@@ -81,21 +81,25 @@ void PrintQuaternionLine(int x, int y, const Quaternion& q, const char* label) {
 
 
 
+Quaternion MakeRotateAxisAngleQuaternion(const Vector3& axis, float angle) {
+	float s = sinf(angle / 2.0f);
+	float c = cosf(angle / 2.0f);
+	return { axis.x * s, axis.y * s, axis.z * s, c };
+}
 
 
 
 
 
-
-// “àÏiDotj
-// ƒxƒNƒgƒ‹“¯m‚ÌŠp“xŒvZ‚È‚Ç‚Ég‚¤
+// å†…ç©ï¼ˆDotï¼‰
+// ãƒ™ã‚¯ãƒˆãƒ«åŒå£«ã®è§’åº¦è¨ˆç®—ãªã©ã«ä½¿ã†
 float Dot(const Vector3& a, const Vector3& b) {
 	return a.x * b.x + a.y * b.y + a.z * b.z;
 }
 
 
-// ŠOÏiCrossj
-// u¨v ‚É’¼Œğ‚·‚é–@üƒxƒNƒgƒ‹‚ğ‹‚ß‚é
+// å¤–ç©ï¼ˆCrossï¼‰
+// uâ†’v ã«ç›´äº¤ã™ã‚‹æ³•ç·šãƒ™ã‚¯ãƒˆãƒ«ã‚’æ±‚ã‚ã‚‹
 Vector3 Cross(const Vector3& a, const Vector3& b) {
 	return{
 		a.y * b.z - a.z * b.y,
@@ -105,31 +109,31 @@ Vector3 Cross(const Vector3& a, const Vector3& b) {
 }
 
 
-// ƒxƒNƒgƒ‹‚Ì’·‚³iLengthj
+// ãƒ™ã‚¯ãƒˆãƒ«ã®é•·ã•ï¼ˆLengthï¼‰
 float Length(const Vector3& v) {
 	return sqrtf(v.x * v.x + v.y * v.y + v.z * v.z);
 }
 
 
-// ³‹K‰»iNormalizej
-// ’·‚³‚ª1‚É‚È‚é‚æ‚¤‚É’²®‚·‚é
+// æ­£è¦åŒ–ï¼ˆNormalizeï¼‰
+// é•·ã•ãŒ1ã«ãªã‚‹ã‚ˆã†ã«èª¿æ•´ã™ã‚‹
 Vector3 Normalize(const Vector3& v) {
 	float len = Length(v);
-	// ’·‚³0‚É‹ß‚¢ê‡‚Ì•ÛŒ¯
+	// é•·ã•0ã«è¿‘ã„å ´åˆã®ä¿é™º
 	if (len < 1e-6f) return { 0, 0, 0 };
 	return { v.x / len, v.y / len, v.z / len };
 }
 
 
-// ”CˆÓ²‰ñ“]s—ñiMakeRotateAxisAnglej
-// ²ƒxƒNƒgƒ‹(axis)ü‚è‚ÉŠp“x(angle)‰ñ“]
+// ä»»æ„è»¸å›è»¢è¡Œåˆ—ï¼ˆMakeRotateAxisAngleï¼‰
+// è»¸ãƒ™ã‚¯ãƒˆãƒ«(axis)å‘¨ã‚Šã«è§’åº¦(angle)å›è»¢
 Matrix4x4 MakeRotateAxisAngle(const Vector3& axis, float angle) {
 	Matrix4x4 result{};
-	float c = cosf(angle);        // —]Œ·
-	float s = sinf(angle);        // ³Œ·
-	float oneMinusC = 1.0f - c;   // (1 - cosƒÆ)
+	float c = cosf(angle);        // ä½™å¼¦
+	float s = sinf(angle);        // æ­£å¼¦
+	float oneMinusC = 1.0f - c;   // (1 - cosÎ¸)
 
-	// ƒƒhƒŠƒQƒX‚Ì‰ñ“]Œö®‚É‚æ‚és—ñ•\Œ»
+	// ãƒ­ãƒ‰ãƒªã‚²ã‚¹ã®å›è»¢å…¬å¼ã«ã‚ˆã‚‹è¡Œåˆ—è¡¨ç¾
 	result.m[0][0] = c + axis.x * axis.x * oneMinusC;
 	result.m[0][1] = axis.x * axis.y * oneMinusC + axis.z * s;
 	result.m[0][2] = axis.x * axis.z * oneMinusC - axis.y * s;
@@ -145,7 +149,7 @@ Matrix4x4 MakeRotateAxisAngle(const Vector3& axis, float angle) {
 	result.m[2][2] = c + axis.z * axis.z * oneMinusC;
 	result.m[2][3] = 0.0f;
 
-	// “¯ŸÀ•W‚Ì‚½‚ß‚Ìİ’è
+	// åŒæ¬¡åº§æ¨™ã®ãŸã‚ã®è¨­å®š
 	result.m[3][0] = 0.0f;
 	result.m[3][1] = 0.0f;
 	result.m[3][2] = 0.0f;
@@ -155,23 +159,23 @@ Matrix4x4 MakeRotateAxisAngle(const Vector3& axis, float angle) {
 }
 
 
-// •ûŒüƒxƒNƒgƒ‹ ¨ •ûŒüƒxƒNƒgƒ‹ ‚Ì‰ñ“]s—ñ¶¬
-// from ‚ğ to ‚ÉŒü‚¯‚és—ñ‚ğ•Ô‚·
+// æ–¹å‘ãƒ™ã‚¯ãƒˆãƒ« â†’ æ–¹å‘ãƒ™ã‚¯ãƒˆãƒ« ã®å›è»¢è¡Œåˆ—ç”Ÿæˆ
+// from ã‚’ to ã«å‘ã‘ã‚‹è¡Œåˆ—ã‚’è¿”ã™
 Matrix4x4 DirectionToDirection(const Vector3& from, const Vector3& to) {
-	// ³‹K‰»
+	// æ­£è¦åŒ–
 	Vector3 u = Normalize(from);
 	Vector3 v = Normalize(to);
 
-	// ‰ñ“]²‚ÍŠOÏ‚Å‹‚Ü‚é
+	// å›è»¢è»¸ã¯å¤–ç©ã§æ±‚ã¾ã‚‹
 	Vector3 axis = Cross(u, v);
-	// Šp“x‚Ì—]Œ·
+	// è§’åº¦ã®ä½™å¼¦
 	float cosTheta = Dot(u, v);
-	// Šp“x‚Ì³Œ·iŠOÏ‚Ì’·‚³j
+	// è§’åº¦ã®æ­£å¼¦ï¼ˆå¤–ç©ã®é•·ã•ï¼‰
 	float sinTheta = Length(axis);
 
-	// ‚Ù‚Ú180‹”½‘ÎŒü‚«iŠOÏ‚ª0‚É‚È‚éj
+	// ã»ã¼180Â°åå¯¾å‘ãï¼ˆå¤–ç©ãŒ0ã«ãªã‚‹ï¼‰
 	if (cosTheta < -0.9999f) {
-		// from ‚É’¼Œğ‚·‚é“K“–‚È²‚ğ’T‚·
+		// from ã«ç›´äº¤ã™ã‚‹é©å½“ãªè»¸ã‚’æ¢ã™
 		Vector3 ortho;
 		if (fabs(u.x) < fabs(u.y) && fabs(u.x) < fabs(u.z))
 			ortho = { 1, 0, 0 };
@@ -179,7 +183,7 @@ Matrix4x4 DirectionToDirection(const Vector3& from, const Vector3& to) {
 			ortho = { 0, 1, 0 };
 		else
 			ortho = { 0, 0, 1 };
-		// ’¼ŒğƒxƒNƒgƒ‹‚Æ‚ÌŠOÏ‚Å‰ñ“]²Œˆ’è
+		// ç›´äº¤ãƒ™ã‚¯ãƒˆãƒ«ã¨ã®å¤–ç©ã§å›è»¢è»¸æ±ºå®š
 		axis = Normalize(Cross(u, ortho));
 		sinTheta = 0.0f;
 		cosTheta = -1.0f;
@@ -187,13 +191,13 @@ Matrix4x4 DirectionToDirection(const Vector3& from, const Vector3& to) {
 		axis = Normalize(axis);
 	}
 
-	// ²¬•ª
+	// è»¸æˆåˆ†
 	float x = axis.x, y = axis.y, z = axis.z;
 	float c = cosTheta;
 	float s = sinTheta;
 	float t = 1.0f - c;
 
-	// ƒƒhƒŠƒQƒX‚Ì‰ñ“]Œö®‚ÉŠî‚Ã‚­s—ñ
+	// ãƒ­ãƒ‰ãƒªã‚²ã‚¹ã®å›è»¢å…¬å¼ã«åŸºã¥ãè¡Œåˆ—
 	Matrix4x4 result = {};
 	result.m[0][0] = t * x * x + c;
 	result.m[0][1] = t * x * y + s * z;
@@ -210,7 +214,7 @@ Matrix4x4 DirectionToDirection(const Vector3& from, const Vector3& to) {
 	result.m[2][2] = t * z * z + c;
 	result.m[2][3] = 0;
 
-	// “¯ŸÀ•W
+	// åŒæ¬¡åº§æ¨™
 	result.m[3][0] = 0;
 	result.m[3][1] = 0;
 	result.m[3][2] = 0;
@@ -219,20 +223,97 @@ Matrix4x4 DirectionToDirection(const Vector3& from, const Vector3& to) {
 	return result;
 }
 
+Matrix4x4 MakeRotateMatrix(const Quaternion& q) {
+	Matrix4x4 mat{};
+
+	float xx = q.x * q.x * 2.0f;
+	float yy = q.y * q.y * 2.0f;
+	float zz = q.z * q.z * 2.0f;
+	float xy = q.x * q.y * 2.0f;
+	float yz = q.y * q.z * 2.0f;
+	float zx = q.z * q.x * 2.0f;
+	float xw = q.x * q.w * 2.0f;
+	float yw = q.y * q.w * 2.0f;
+	float zw = q.z * q.w * 2.0f;
+
+	mat.m[0][0] = 1.0f - yy - zz;
+	mat.m[0][1] = xy - zw;
+	mat.m[0][2] = zx + yw;
+
+	mat.m[1][0] = xy + zw;
+	mat.m[1][1] = 1.0f - zz - xx;
+	mat.m[1][2] = yz - xw;
+
+	mat.m[2][0] = zx - yw;
+	mat.m[2][1] = yz + xw;
+	mat.m[2][2] = 1.0f - xx - yy;
+
+	mat.m[3][3] = 1.0f;
+
+	return mat;
+}
+
+// ----------------------------
+// Transform by matrix
+// ----------------------------
+Vector3 Transform(const Vector3& v, const Matrix4x4& m) {
+	return { v.x * m.m[0][0] + v.y * m.m[0][1] + v.z * m.m[0][2],
+			v.x * m.m[1][0] + v.y * m.m[1][1] + v.z * m.m[1][2],
+			v.x * m.m[2][0] + v.y * m.m[2][1] + v.z * m.m[2][2] };
+}
+
+// ----------------------------
+// RotateVector with quaternion
+// ----------------------------
+Vector3 RotateVector(const Vector3& v, const Quaternion& q) {
+	Quaternion p = { v.x, v.y, v.z, 0.0f };
+
+	Quaternion qc = { -q.x, -q.y, -q.z, q.w };
+
+	auto Mul = [](const Quaternion& a, const Quaternion& b) {
+		return Quaternion{ a.w * b.x + a.x * b.w + a.y * b.z - a.z * b.y,
+						  a.w * b.y - a.x * b.z + a.y * b.w + a.z * b.x,
+						  a.w * b.z + a.x * b.y - a.y * b.x + a.z * b.w,
+						  a.w * b.w - a.x * b.x - a.y * b.y - a.z * b.z };
+		};
+
+	Quaternion r = Mul(Mul(q, p), qc);
+	return { r.x, r.y, r.z };
+}
 
 
-// s—ñ‚ğƒXƒNƒŠ[ƒ“‚É•`‰æ‚·‚é•Ö—˜ŠÖ”
+void QuaternionScreenPrintf(int x, int y, const Quaternion& q,
+	const char* label) {
+	Novice::ScreenPrintf(x, y, "%s", label);
+	Novice::ScreenPrintf(x, y, "%.2f  %.2f  %.2f  %.2f", q.x, q.y, q.z, q.w);
+}
+
+void MatrixScreenPrintf(int x, int y, const Matrix4x4& m, const char* label) {
+	Novice::ScreenPrintf(x, y, "%s", label);
+
+	for (int row = 0; row < 4; row++) {
+		Novice::ScreenPrintf(x, y + 20 + row * 20, "%.3f  %.3f  %.3f  %.3f",
+			m.m[0][row], m.m[1][row], m.m[2][row], m.m[3][row]);
+	}
+}
+
+void VectorScreenPrintf(int x, int y, const Vector3& v, const char* label) {
+	Novice::ScreenPrintf(x, y, "%.2f  %.2f  %.2f  : %s", v.x, v.y, v.z, label);
+}
+
+
+// è¡Œåˆ—ã‚’ã‚¹ã‚¯ãƒªãƒ¼ãƒ³ã«æç”»ã™ã‚‹ä¾¿åˆ©é–¢æ•°
 static const int kRowHeight = 20;
 static const int kColumnWidth = 60;
 
 
-// WindowsƒAƒvƒŠ‚ÌƒGƒ“ƒgƒŠ[ƒ|ƒCƒ“ƒg
+// Windowsã‚¢ãƒ—ãƒªã®ã‚¨ãƒ³ãƒˆãƒªãƒ¼ãƒã‚¤ãƒ³ãƒˆ
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
-	// Noviceƒ‰ƒCƒuƒ‰ƒŠ‰Šú‰»
+	// Noviceãƒ©ã‚¤ãƒ–ãƒ©ãƒªåˆæœŸåŒ–
 	Novice::Initialize(kWindowTitle, kWindowWidth, kWindowHeight);
 
-	// ƒL[“ü—Í•Û‘¶—piŒ»İE‘OƒtƒŒ[ƒ€j
+	// ã‚­ãƒ¼å…¥åŠ›ä¿å­˜ç”¨ï¼ˆç¾åœ¨ãƒ»å‰ãƒ•ãƒ¬ãƒ¼ãƒ ï¼‰
 	char keys[256] = { 0 };
 	char preKeys[256] = { 0 };
 
@@ -244,57 +325,72 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	Quaternion normal = Normalize(q1);
 	Quaternion mul1 = Multiply(q1, q2);
 	Quaternion mul2 = Multiply(q2, q1);
-	float norm = Norm(q1);
+	//float norm = Norm(q1);
 
 
 
 
-	// ƒƒCƒ“ƒ‹[ƒv
+	// ãƒ¡ã‚¤ãƒ³ãƒ«ãƒ¼ãƒ—
 	while (Novice::ProcessMessage() == 0) {
-		// ƒtƒŒ[ƒ€ŠJn
+		// ãƒ•ãƒ¬ãƒ¼ãƒ é–‹å§‹
 		Novice::BeginFrame();
 
-		// ƒL[“ü—ÍXV
+		// ã‚­ãƒ¼å…¥åŠ›æ›´æ–°
 		memcpy(preKeys, keys, 256);
 		Novice::GetHitKeyStateAll(keys);
 
 		///
-		///«XVˆ—‚±‚±‚©‚ç
+		///â†“æ›´æ–°å‡¦ç†ã“ã“ã‹ã‚‰
 		/// 
 
 
 		///
-		/// ªXVˆ—‚±‚±‚Ü‚Å
+		/// â†‘æ›´æ–°å‡¦ç†ã“ã“ã¾ã§
 		///
 
-		/// «•`‰æˆ—‚±‚±‚©‚ç
+		/// â†“æç”»å‡¦ç†ã“ã“ã‹ã‚‰
 		///
 
-		// o—ÍˆÊ’u
-		int y = 0;
-		PrintQuaternionLine(0, y += 20, identity, "Identity");
-		PrintQuaternionLine(0, y += 20, conj, "Conjugate");
-		PrintQuaternionLine(0, y += 20, inv, "Inverse");
-		PrintQuaternionLine(0, y += 20, normal, "Normalize");
-		PrintQuaternionLine(0, y += 20, mul1, "Multiply(q1, q2)");
-		PrintQuaternionLine(0, y += 20, mul2, "Multiply(q2, q1)");
-		Novice::ScreenPrintf(0, y += 20, "%6.02f                           : Norm", norm);
+		Quaternion rotation =
+			MakeRotateAxisAngleQuaternion(Normalize(Vector3
+				{ 1.0f, 0.4f, -0.2f }), 0.45f);
+
+		Vector3 pointY = { 2.1f, -0.9f, 1.3f };
+		Matrix4x4 rotateMatrix = MakeRotateMatrix(rotation);
+		Vector3 rotateByQuaternion = RotateVector(pointY, rotation);
+		Vector3 rotateByMatrix = Transform(pointY, rotateMatrix);
+
+		QuaternionScreenPrintf(0, kRowHeight * 0, rotation, "                          : rotation");
+		MatrixScreenPrintf(0, kRowHeight * 1, rotateMatrix, "rotateMatrix");
+		VectorScreenPrintf(0, kRowHeight * 6, rotateByQuaternion,
+			"rotateByQuaternion");
+		VectorScreenPrintf(0, kRowHeight * 7, rotateByMatrix, "rotateByMatrix");
+
+		//// å‡ºåŠ›ä½ç½®
+		//int y = 0;
+		//PrintQuaternionLine(0, y += 20, identity, "Identity");
+		//PrintQuaternionLine(0, y += 20, conj, "Conjugate");
+		//PrintQuaternionLine(0, y += 20, inv, "Inverse");
+		//PrintQuaternionLine(0, y += 20, normal, "Normalize");
+		//PrintQuaternionLine(0, y += 20, mul1, "Multiply(q1, q2)");
+		//PrintQuaternionLine(0, y += 20, mul2, "Multiply(q2, q1)");
+		//Novice::ScreenPrintf(0, y += 20, "%6.02f                           : Norm", norm);
 
 
 		///
-		/// ª•`‰æˆ—‚±‚±‚Ü‚Å
+		/// â†‘æç”»å‡¦ç†ã“ã“ã¾ã§
 
 
-		// ƒtƒŒ[ƒ€I—¹
+		// ãƒ•ãƒ¬ãƒ¼ãƒ çµ‚äº†
 		Novice::EndFrame();
 
-		// ESC‚ÅI—¹
+		// ESCã§çµ‚äº†
 		if (preKeys[DIK_ESCAPE] == 0 && keys[DIK_ESCAPE] != 0) {
 			break;
 		}
 	}
 
-	// ƒ‰ƒCƒuƒ‰ƒŠ‚ÌI—¹ˆ—
+	// ãƒ©ã‚¤ãƒ–ãƒ©ãƒªã®çµ‚äº†å‡¦ç†
 	Novice::Finalize();
 	return 0;
 }
